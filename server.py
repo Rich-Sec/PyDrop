@@ -5,6 +5,7 @@ import socket
 import ssl
 import os
 import signal
+import select
 
 class Server:
     def __init__(self, HOST="0.0.0.0", PORT=9090, FILEPATH="./", *args, **kwargs):
@@ -29,37 +30,40 @@ class Server:
         # Accept incoming connection from client and send file data:
         while self.ALIVE:
             try:
-                conn, addr = self.SERVER_SOCKET.accept()
-                try:
-                    with conn:
-                        print(f"Client Connection {addr} Initiated")
+                # Use select.select() to wait for connection with timeout
+                readable, _, _ = select.select([self.SERVER_SOCKET], [], [], 1.0)
+                if readable:
+                    conn, addr = self.SERVER_SOCKET.accept()
+                    try:
+                        with conn:
+                            print(f"Client Connection {addr} Initiated")
 
-                        # Read filename specified by the client
-                        filenameLengthBytes = conn.recv(4)
-                        filenameLength = int.from_bytes(filenameLengthBytes, byteorder='big')
-                        filename = conn.recv(filenameLength).decode()
+                            # Read filename specified by the client
+                            filenameLengthBytes = conn.recv(4)
+                            filenameLength = int.from_bytes(filenameLengthBytes, byteorder='big')
+                            filename = conn.recv(filenameLength).decode()
 
-                        # Check if file exists
-                        try:
-                            # Open the file and parse the contents
-                            with open(filename, "rb") as file:
-                                fileData = file.read()
-                        except:
-                            print(f"Unable to access file {filename}")
-                            continue
-                        try:
-                            # Send filename length and data to client:
-                            conn.sendall(len(filename).to_bytes(4, byteorder='big'))
-                            conn.sendall(filename.encode())
-                            # Send file data length and file data to client:
-                            conn.sendall(len(fileData).to_bytes(8, byteorder='big'))
-                            conn.sendall(fileData)
+                            # Check if file exists
+                            try:
+                                # Open the file and parse the contents
+                                with open(filename, "rb") as file:
+                                    fileData = file.read()
+                            except:
+                                print(f"Unable to access file {filename}")
+                                continue
+                            try:
+                                # Send filename length and data to client:
+                                conn.sendall(len(filename).to_bytes(4, byteorder='big'))
+                                conn.sendall(filename.encode())
+                                # Send file data length and file data to client:
+                                conn.sendall(len(fileData).to_bytes(8, byteorder='big'))
+                                conn.sendall(fileData)
 
-                            print(f"File {filename} Sent Successfully")          
-                        except Exception as e:
-                            print(e)
-                except Exception as e:
-                    print(e)
+                                print(f"File {filename} Sent Successfully")          
+                            except Exception as e:
+                                print(e)
+                    except Exception as e:
+                        print(e)
             except KeyboardInterrupt:
                 print("Stopping PyDrop Server...")
                 self.stop()
