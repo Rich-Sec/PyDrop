@@ -1,5 +1,7 @@
 # Introduction:
-PyDrop was written as a side project but also has practical applications! Use PyDrop to transfer files **securely** over SSL/TLS or unsecurely! Quickly transfer files from one host to another whether your playing a CTF, performing a penetration test or carrying out general administration. PyDrop is designed to be deployed quickly and easily in any environment that supports the Python programming language, on both Windows and Linux.
+PyDrop was written as a side project but also has practical applications! Use PyDrop to transfer files **securely** over SSL/TLS or unsecurely! Quickly transfer files from one host to another whether your playing a CTF, performing a penetration test or carrying out general administration. 
+
+PyDrop is designed to be deployed quickly and easily in any environment that supports the Python programming language, on both Windows and Linux.
 
 # Prerequisites:
 PyDrop requires the following prerequisites to work:
