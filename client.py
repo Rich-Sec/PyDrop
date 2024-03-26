@@ -1,5 +1,6 @@
 # Title: PyDrop Client Implementation
 # Author: Richard Smith
+# Version: 1.0
 
 import socket
 import ssl
@@ -15,7 +16,7 @@ class Client:
             try:
                 clientSocket.connect((self.HOST, self.PORT))
                 print(f"[*] Connected to PyDrop server")
-
+            
                 # Send the name of the file we wish to retreive to the server:
                 filenameLength = len(self.FILENAME)
                 clientSocket.sendall(filenameLength.to_bytes(4, byteorder='big'))

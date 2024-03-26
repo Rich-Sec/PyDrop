@@ -1,5 +1,6 @@
 # Title: PyDrop server implementation
 # Author: Richard Smith
+# Version 1.0
 
 import socket
 import ssl
