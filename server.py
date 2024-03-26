@@ -27,7 +27,7 @@ class Server:
         self.SERVER_SOCKET.listen()
         self.ALIVE = True
 
-        print(f"PyDrop Listening on {self.HOST}:{self.PORT}")
+        print(f"[*] PyDrop listening on {self.HOST}:{self.PORT}")
 
         # Accept incoming connection from client and send file data:
         while self.ALIVE:
@@ -38,7 +38,7 @@ class Server:
                     conn, addr = self.SERVER_SOCKET.accept()
                     try:
                         with conn:
-                            print(f"Client Connection {addr} Initiated")
+                            print(f"[*] New connection from {addr[0]}")
 
                             # Read filename specified by the client
                             filenameLengthBytes = conn.recv(4)
@@ -51,7 +51,7 @@ class Server:
                                 with open(filename, "rb") as file:
                                     fileData = file.read()
                             except:
-                                print(f"Unable to access file {filename}")
+                                print(f"[X] Unable to access file {filename}")
                                 continue
                             try:
                                 # Send filename length and data to client:
@@ -61,13 +61,13 @@ class Server:
                                 conn.sendall(len(fileData).to_bytes(8, byteorder='big'))
                                 conn.sendall(fileData)
 
-                                print(f"File {filename} Sent Successfully")          
+                                print(f"[*] File - {filename} sent successfully")          
                             except Exception as e:
                                 print(e)
                     except Exception as e:
                         print(e)
             except KeyboardInterrupt:
-                print("Stopping PyDrop Server...")
+                print("[!] Stopping PyDrop Server...")
                 self.stop()
 
     def encrypted_server(self):
@@ -85,7 +85,7 @@ class Server:
         
         with ssl_context.wrap_socket(self.SERVER_SOCKET, server_side=True) as ssl_socket:
             self.ALIVE = True
-            print(f"PyDrop Listening on {self.HOST}:{self.PORT}")
+            print(f"[*] PyDrop listening on {self.HOST}:{self.PORT}")
 
             # Accept incoming connection from client and send file data:
             while self.ALIVE:
@@ -93,10 +93,13 @@ class Server:
                     # Used to wait for connection with timeout
                     readable, _, _ = select.select([ssl_socket], [], [], 1.0)
                     if readable:
-                        conn, addr = ssl_socket.accept()
+                        try:
+                            conn, addr = ssl_socket.accept()
+                        except ssl.SSLError:
+                            print("Client attempted to connected without using SSL")
                         try:
                             with conn:
-                                print(f"Client Connection {addr} Initiated")
+                                print(f"[*] New connection from {addr[0]}")
 
                                 # Read filename specified by the client
                                 filenameLengthBytes = conn.recv(4)
@@ -109,7 +112,7 @@ class Server:
                                     with open(filename, "rb") as file:
                                         fileData = file.read()
                                 except:
-                                    print(f"Unable to access file {filename}")
+                                    print(f"[X] Unable to access file {filename}")
                                     continue
                                 try:
                                     # Send filename length and data to client:
@@ -119,17 +122,16 @@ class Server:
                                     conn.sendall(len(fileData).to_bytes(8, byteorder="big"))
                                     conn.sendall(fileData)
 
-                                    print(f"File {filename} Sent Successfully")
+                                    print(f"[*] File - {filename} sent successfully")
                                 except Exception as e:
                                     print(e)
                         except Exception as e:
                             print(e)
                 except KeyboardInterrupt:
-                    print("Stopping TLS Server...")
                     self.stop()
 
     def signal_handler(self, sig, frame):
-        print("Caught CTRL+C, Stopping PyDrop Server...")
+        print("[!] Caught CTRL+C, stopping PyDrop server...")
         self.stop()
 
     def stop(self):

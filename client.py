@@ -13,8 +13,8 @@ class Client:
     def fetch_file(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientSocket:
             try:
-                clientSocket.sslSocketect((self.HOST, self.PORT))
-                print(f"sslSocketected to PyDrop Server")
+                clientSocket.connect((self.HOST, self.PORT))
+                print(f"[*] Connected to PyDrop server")
 
                 # Send the name of the file we wish to retreive to the server:
                 filenameLength = len(self.FILENAME)
@@ -41,7 +41,7 @@ class Client:
                 with open(filename, "wb") as file:
                     file.write(file_data)
 
-                print(f"File received successfully")
+                print(f"[*] File received successfully")
             except Exception as e:
                 print(e)
     
@@ -57,7 +57,7 @@ class Client:
                 
                 # sslSocketect to server
                 sslSocket.connect((self.HOST, self.PORT))
-                print(f"Connected to PyDrop Server Securely")
+                print(f"[*] Connected to PyDrop server securely")
             
                 # Send the name of the file we wish to retreive to the server:
                 filenameLength = len(self.FILENAME)
@@ -84,7 +84,7 @@ class Client:
                 with open(filename, "wb") as file:
                     file.write(file_data)
 
-                print(f"File received successfully")
+                print(f"[*] File received successfully")
             except Exception as e:
                 print(e)
         

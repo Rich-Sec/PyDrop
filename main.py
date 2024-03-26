@@ -4,6 +4,7 @@
 
 from server import Server
 from client import Client
+import time
 import argparse
 
 def main():
@@ -63,6 +64,11 @@ def main():
             parser.print_help()
             exit()
         else:
+            print(f"[!] Starting PyDrop Server")
+            print(f"[!] Using {args.certfile} as certificate")
+            print(f"[!] Using {args.keyfile} as key file")
+            time.sleep(3) # Delay and wait for manual abort
+
             if (args.port is not None and args.filepath is not None):
                 PyDropServer = Server(PORT=args.port, FILEPATH=args.filename, CERTFILE=args.certfile, KEYFILE=args.keyfile) # Port and filename are user defined
             elif(args.port is not None and args.filepath is None):
@@ -75,6 +81,9 @@ def main():
     
     # Instantiate a new server (unencrypted) object:
     elif (args.MODE == "server" and args.encrypted is False):
+        print(f"[!] Starting PyDrop Server")
+        print(f"[!] WARNING - PyDrop starting in unencrypted mode!")
+        time.sleep(3) # Delay and wait for manual abort
         if (args.port is not None and args.filepath is not None):
             PyDropServer = Server(PORT=args.port, FILEPATH=args.filename) # Port and Filepath are user defined:
         elif(args.port is not None and args.filepath is None):
